@@ -132,6 +132,8 @@ $fila1 = mysqli_fetch_array($result1);
 
 $id_rol = $fila1['id'];
 echo "id rol ".$id_rol. "<br/>";
+
+
 // ahora hay que buscar que usuario puede hacer esa tarea en rolusuario
 $sql3="select * from rolusuario ";
 $sql3.=" where IdRol='".$id_rol."' ";
@@ -139,6 +141,31 @@ $resultadofi3=mysqli_query($con, $sql3);
 $filafi3 = mysqli_fetch_array($resultadofi3);
 
 $id_usuario_tarea = $filafi3['IdUsuario'];
+
+if($id_rol == 1){
+	echo "es alumno <br/>";
+	// hay que encontrar al usuario correcto
+
+	$sql3="select * from flujotramite ";
+	$sql3.=" where Flujo='".$flujo."' and nro_tramite='".$nro_tramite."' ";
+	$resultadofi3=mysqli_query($con, $sql3);
+	$filafi3 = mysqli_fetch_array($resultadofi3);
+	
+	echo " *************** ALUMNO CORRECTO <br/>".$filafi3['usuario']."<br/>";
+	
+	$usuario_usuario_alumno = $filafi3['usuario'];
+	// buscando su id de ese alumno
+
+	$sql3="select * from usuario ";
+	$sql3.=" where descripcion='".$usuario_usuario_alumno."' ";
+	$resultadofi3=mysqli_query($con, $sql3);
+	$filafi3 = mysqli_fetch_array($resultadofi3);
+
+	$id_correcto_usuario = $filafi3['id'];
+	echo " *************** ID CORRECTO <br/>".$id_correcto_usuario."<br/>";
+	$id_usuario_tarea = $id_correcto_usuario;
+	
+}
 
 echo "id usuario siguiente tarea ".$id_usuario_tarea. "<br/>";
 $sql4="select * from usuario ";
@@ -149,11 +176,19 @@ $usuario_a_realizar_sig_tarea = $fila4['descripcion'];
 
 	// ahora ubiacmos al kardista
 
+// ***************************************************************************************
+$sql = "select * from flujotramite where Flujo='".$flujo."' and nro_tramite = '".$nro_tramite."' ";
+$ress = mysqli_query($con, $sql);
+$fill = mysqli_fetch_array($ress);
+
+$usuario_anterior = $fill['usuario_tarea'];
+// ***************************************************************************************
+
 
 
 echo "usuario a realixar al siguient tarera ".$usuario_a_realizar_sig_tarea. "<br/>";
 $sql ="insert into flujotramite(Flujo, proceso, nro_tramite, fechaini, fechafin, usuario, usuario_tarea) ";
-$sql .= "values('".$flujo."', '".$proceso."','".$nro_tramite."', '".$fecha_actual."', NULL , '".$usuario_a_realizar_sig_tarea."','".$_SESSION['usuario']."'); ";
+$sql .= "values('".$flujo."', '".$proceso."','".$nro_tramite."', '".$fecha_actual."', NULL , '".$usuario_a_realizar_sig_tarea."','".$usuario_anterior."'); ";
 // echo $sql;
 
 if($tipo != 'F' and $estado_para_ir_adelante == 1 and isset($proceso)){
@@ -167,5 +202,3 @@ if ( $proceso == "" or $tipo == 'F' or ($_SESSION['rol'] != $fila['rol'])){
 	header("Location: flujo.php".$parametros);	
 }
 ?>
-
-
