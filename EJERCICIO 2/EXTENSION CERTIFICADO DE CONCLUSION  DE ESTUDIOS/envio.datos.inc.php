@@ -1,3 +1,1 @@
-<p>
-    <!-- no se quieren datos -->
-</p>
+<?php ?>
